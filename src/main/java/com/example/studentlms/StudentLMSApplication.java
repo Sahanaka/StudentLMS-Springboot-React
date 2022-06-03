@@ -5,11 +5,11 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
 
 @SpringBootApplication(exclude = {DataSourceAutoConfiguration.class })
-public class StudentlmsApplication {
+public class StudentLMSApplication {
 
 	public static void main(String[] args) {
 
-		SpringApplication.run(StudentlmsApplication.class, args);
+		SpringApplication.run(StudentLMSApplication.class, args);
 		System.out.println("SERVER IS RUNNING");
 	}
 
