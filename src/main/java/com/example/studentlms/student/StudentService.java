@@ -2,13 +2,13 @@ package com.example.studentlms.student;
 
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Optional;
 
 @Service
-public class StudentService {
+public class StudentService implements StudentManagementService {
     private final StudentRepository studentRepository;
 
     @Autowired
@@ -16,23 +16,34 @@ public class StudentService {
         this.studentRepository = studentRepository;
     }
 
-    public List<Student> getStudents() {
-        return studentRepository.findAll();
+    public ResponseEntity<List<Student>> getStudents() {
+        return ResponseEntity.ok(studentRepository.findAll());
     }
 
-    public void registerNewStudent(Student student) {
+    public ResponseEntity<String> registerNewStudent(Student student) {
+        if (student.equals(null)) {
+            return ResponseEntity.badRequest().body("Please Validate your input!");
+        }
         Student existingStudent = studentRepository.findStudentByEmail(student.getEmail());
         if (existingStudent != null) {
-            throw new IllegalStateException("Invalid Email!");
+            return ResponseEntity.badRequest().body("Invalid Email");
         }
-        studentRepository.save(student);
+        try {
+            studentRepository.save(student);
+            return ResponseEntity.ok("New Student Created");
+        }
+        catch (Exception ex) { return ResponseEntity.internalServerError().body("Server Error!" + ex.toString()); }
     }
 
-    public void deleteStudent(String id) {
+    public ResponseEntity<String> deleteStudent(String id) {
         boolean exists = studentRepository.existsById(id);
         if (!exists) {
-            throw new IllegalStateException("Invalid ID!");
+            return ResponseEntity.badRequest().body("Invalid ID!");
         }
-        studentRepository.deleteById(id);
+        try {
+            studentRepository.deleteById(id);
+            return ResponseEntity.ok("Deleted student with ID: " + id);
+        }
+        catch (Exception ex) { return ResponseEntity.internalServerError().body("Server Error!" + ex.toString()); }
     }
 }
